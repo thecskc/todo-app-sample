@@ -1,0 +1,45 @@
+import express from "express";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import { listTodos, getTodo, createTodo, updateTodo, deleteTodo } from "./store.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const app = express();
+
+app.use(express.json());
+app.use(express.static(join(__dirname, "..", "public")));
+
+app.get("/api/todos", (req, res) => {
+  res.json(listTodos());
+});
+
+app.post("/api/todos", (req, res) => {
+  const title = (req.body?.title ?? "").trim();
+  if (!title) {
+    return res.status(400).json({ error: "title is required" });
+  }
+  res.status(201).json(createTodo(title));
+});
+
+app.patch("/api/todos/:id", (req, res) => {
+  const todo = updateTodo(Number(req.params.id), req.body ?? {});
+  if (!todo) return res.status(404).json({ error: "not found" });
+  res.json(todo);
+});
+
+app.delete("/api/todos/:id", (req, res) => {
+  const ok = deleteTodo(Number(req.params.id));
+  if (!ok) return res.status(404).json({ error: "not found" });
+  res.status(204).end();
+});
+
+const PORT = process.env.PORT || 3000;
+
+// Only start listening when run directly, so tests can import the app.
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  app.listen(PORT, () => {
+    console.log(`Todo app listening on http://localhost:${PORT}`);
+  });
+}
+
+export default app;

@@ -1,0 +1,32 @@
+// In-memory todo store. Swap this module out for a real database later.
+let nextId = 1;
+const todos = [];
+
+export function listTodos() {
+  return todos;
+}
+
+export function getTodo(id) {
+  return todos.find((t) => t.id === id);
+}
+
+export function createTodo(title) {
+  const todo = { id: nextId++, title, done: false, createdAt: new Date().toISOString() };
+  todos.push(todo);
+  return todo;
+}
+
+export function updateTodo(id, fields) {
+  const todo = getTodo(id);
+  if (!todo) return undefined;
+  if (typeof fields.title === "string") todo.title = fields.title;
+  if (typeof fields.done === "boolean") todo.done = fields.done;
+  return todo;
+}
+
+export function deleteTodo(id) {
+  const index = todos.findIndex((t) => t.id === id);
+  if (index === -1) return false;
+  todos.splice(index, 1);
+  return true;
+}
