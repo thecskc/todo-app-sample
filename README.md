@@ -22,6 +22,7 @@ npm test         # run unit tests
 | Method | Path              | Body                       | Description        |
 | ------ | ----------------- | -------------------------- | ------------------ |
 | GET    | `/api/todos`      | —                          | List all todos     |
+| GET    | `/api/todos/:id`  | —                          | Get a single todo  |
 | POST   | `/api/todos`      | `{ "title": "..." }`       | Create a todo      |
 | PATCH  | `/api/todos/:id`  | `{ "title?", "done?" }`    | Update a todo      |
 | DELETE | `/api/todos/:id`  | —                          | Delete a todo      |

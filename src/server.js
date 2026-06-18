@@ -13,6 +13,12 @@ app.get("/api/todos", (req, res) => {
   res.json(listTodos());
 });
 
+app.get("/api/todos/:id", (req, res) => {
+  const todo = getTodo(Number(req.params.id));
+  if (!todo) return res.status(404).json({ error: "not found" });
+  res.json(todo);
+});
+
 app.post("/api/todos", (req, res) => {
   const title = (req.body?.title ?? "").trim();
   if (!title) {
