@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { listTodos, getTodo, createTodo, updateTodo, deleteTodo } from "../src/store.js";
+import { listTodos, getTodo, createTodo, updateTodo, deleteTodo, clearCompleted } from "../src/store.js";
 
 test("createTodo adds a todo with defaults", () => {
   const before = listTodos().length;
@@ -26,4 +26,14 @@ test("deleteTodo removes a todo", () => {
   const todo = createTodo("delete me");
   assert.equal(deleteTodo(todo.id), true);
   assert.equal(deleteTodo(todo.id), false);
+});
+
+test("clearCompleted removes only done todos and returns the count", () => {
+  const a = createTodo("keep me");
+  const b = createTodo("clear me");
+  updateTodo(b.id, { done: true });
+  const removed = clearCompleted();
+  assert.ok(removed >= 1);
+  assert.equal(getTodo(b.id), undefined);
+  assert.ok(getTodo(a.id));
 });

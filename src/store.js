@@ -30,3 +30,14 @@ export function deleteTodo(id) {
   todos.splice(index, 1);
   return true;
 }
+
+export function clearCompleted() {
+  let removed = 0;
+  for (let i = todos.length - 1; i >= 0; i--) {
+    if (todos[i].done) {
+      todos.splice(i, 1);
+      removed++;
+    }
+  }
+  return removed;
+}
