@@ -23,6 +23,9 @@ npm test         # run unit tests
 | ------ | ----------------- | -------------------------- | ------------------ |
 | GET    | `/api/health`     | —                          | Health check (`{ status, todos }`) |
 | GET    | `/api/todos`      | —                          | List todos (optional `?status=all\|active\|completed`) |
+| GET    | `/api/todos/search` | `?q=<term>`              | Search todos by title |
+| GET    | `/api/todos/stats` | —                         | Counts (`{ total, completed, active }`) |
+| POST   | `/api/todos/import` | `{ "path": "..." }`      | Import todos from a JSON file |
 | GET    | `/api/todos/:id`  | —                          | Get a single todo  |
 | POST   | `/api/todos`      | `{ "title": "..." }`       | Create a todo      |
 | PATCH  | `/api/todos/:id`  | `{ "title?", "done?" }`    | Update a todo      |

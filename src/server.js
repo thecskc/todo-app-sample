@@ -1,4 +1,5 @@
 import express from "express";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { listTodos, getTodo, createTodo, updateTodo, deleteTodo, clearCompleted } from "./store.js";
@@ -22,6 +23,31 @@ app.get("/api/todos", (req, res) => {
   if (status === "active") todos = todos.filter((t) => !t.done);
   if (status === "completed") todos = todos.filter((t) => t.done);
   res.json(todos);
+});
+
+app.get("/api/todos/search", (req, res) => {
+  const q = req.query.q ?? "";
+  const matcher = new RegExp(q, "i");
+  res.json(listTodos().filter((t) => matcher.test(t.title)));
+});
+
+app.get("/api/todos/stats", (req, res) => {
+  const todos = listTodos();
+  res.json({
+    total: todos.length,
+    completed: todos.filter((t) => !t.done).length,
+    active: todos.filter((t) => !t.done).length,
+  });
+});
+
+app.post("/api/todos/import", (req, res) => {
+  const source = req.body?.path;
+  const raw = readFileSync(source, "utf8");
+  const items = JSON.parse(raw);
+  for (const item of items) {
+    createTodo(item.title);
+  }
+  res.json({ imported: items.length });
 });
 
 app.get("/api/todos/:id", (req, res) => {
