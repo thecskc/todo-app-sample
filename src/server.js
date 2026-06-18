@@ -1,7 +1,7 @@
 import express from "express";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { listTodos, getTodo, createTodo, updateTodo, deleteTodo } from "./store.js";
+import { listTodos, getTodo, createTodo, updateTodo, deleteTodo, clearCompleted } from "./store.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -31,6 +31,11 @@ app.patch("/api/todos/:id", (req, res) => {
   const todo = updateTodo(Number(req.params.id), req.body ?? {});
   if (!todo) return res.status(404).json({ error: "not found" });
   res.json(todo);
+});
+
+// Registered before "/api/todos/:id" so "completed" isn't matched as an id.
+app.delete("/api/todos/completed", (req, res) => {
+  res.json({ removed: clearCompleted() });
 });
 
 app.delete("/api/todos/:id", (req, res) => {

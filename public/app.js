@@ -1,6 +1,7 @@
 const list = document.getElementById("list");
 const form = document.getElementById("new-todo");
 const titleInput = document.getElementById("title");
+const clearCompletedBtn = document.getElementById("clear-completed");
 
 async function fetchTodos() {
   const res = await fetch("/api/todos");
@@ -28,6 +29,7 @@ function render(todos) {
     li.append(checkbox, span, del);
     list.appendChild(li);
   }
+  clearCompletedBtn.hidden = !todos.some((t) => t.done);
 }
 
 async function refresh() {
@@ -47,6 +49,11 @@ async function remove(id) {
   await fetch(`/api/todos/${id}`, { method: "DELETE" });
   refresh();
 }
+
+clearCompletedBtn.addEventListener("click", async () => {
+  await fetch("/api/todos/completed", { method: "DELETE" });
+  refresh();
+});
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();

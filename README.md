@@ -26,6 +26,7 @@ npm test         # run unit tests
 | POST   | `/api/todos`      | `{ "title": "..." }`       | Create a todo      |
 | PATCH  | `/api/todos/:id`  | `{ "title?", "done?" }`    | Update a todo      |
 | DELETE | `/api/todos/:id`  | —                          | Delete a todo      |
+| DELETE | `/api/todos/completed` | —                     | Delete all done todos (`{ removed }`) |
 
 ## Layout
 
