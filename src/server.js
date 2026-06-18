@@ -14,7 +14,14 @@ app.get("/api/health", (req, res) => {
 });
 
 app.get("/api/todos", (req, res) => {
-  res.json(listTodos());
+  const status = req.query.status ?? "all";
+  if (!["all", "active", "completed"].includes(status)) {
+    return res.status(400).json({ error: "status must be all, active, or completed" });
+  }
+  let todos = listTodos();
+  if (status === "active") todos = todos.filter((t) => !t.done);
+  if (status === "completed") todos = todos.filter((t) => t.done);
+  res.json(todos);
 });
 
 app.get("/api/todos/:id", (req, res) => {

@@ -14,6 +14,8 @@
       li { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0; border-bottom: 1px solid #eee; }
       li.done span { text-decoration: line-through; color: #999; }
       li span { flex: 1; }
+      .filters { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+      .filters button.active { font-weight: bold; border-color: #333; }
     </style>
   </head>
   <body>
@@ -22,6 +24,11 @@
       <input type="text" id="title" placeholder="What needs doing?" autocomplete="off" />
       <button type="submit">Add</button>
     </form>
+    <div class="filters" id="filters">
+      <button type="button" data-status="all" class="active">All</button>
+      <button type="button" data-status="active">Active</button>
+      <button type="button" data-status="completed">Completed</button>
+    </div>
     <ul id="list"></ul>
     <button id="clear-completed" type="button" hidden>Clear completed</button>
     <script src="app.js"></script>
