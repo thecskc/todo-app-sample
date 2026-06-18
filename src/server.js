@@ -9,6 +9,10 @@ const app = express();
 app.use(express.json());
 app.use(express.static(join(__dirname, "..", "public")));
 
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", todos: listTodos().length });
+});
+
 app.get("/api/todos", (req, res) => {
   res.json(listTodos());
 });
