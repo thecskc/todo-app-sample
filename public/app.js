@@ -2,9 +2,12 @@ const list = document.getElementById("list");
 const form = document.getElementById("new-todo");
 const titleInput = document.getElementById("title");
 const clearCompletedBtn = document.getElementById("clear-completed");
+const filters = document.getElementById("filters");
+
+let currentStatus = "all";
 
 async function fetchTodos() {
-  const res = await fetch("/api/todos");
+  const res = await fetch(`/api/todos?status=${currentStatus}`);
   return res.json();
 }
 
@@ -49,6 +52,16 @@ async function remove(id) {
   await fetch(`/api/todos/${id}`, { method: "DELETE" });
   refresh();
 }
+
+filters.addEventListener("click", (e) => {
+  const status = e.target.dataset.status;
+  if (!status) return;
+  currentStatus = status;
+  for (const btn of filters.querySelectorAll("button")) {
+    btn.classList.toggle("active", btn.dataset.status === status);
+  }
+  refresh();
+});
 
 clearCompletedBtn.addEventListener("click", async () => {
   await fetch("/api/todos/completed", { method: "DELETE" });

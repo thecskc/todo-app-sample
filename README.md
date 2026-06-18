@@ -22,7 +22,7 @@ npm test         # run unit tests
 | Method | Path              | Body                       | Description        |
 | ------ | ----------------- | -------------------------- | ------------------ |
 | GET    | `/api/health`     | —                          | Health check (`{ status, todos }`) |
-| GET    | `/api/todos`      | —                          | List all todos     |
+| GET    | `/api/todos`      | —                          | List todos (optional `?status=all\|active\|completed`) |
 | GET    | `/api/todos/:id`  | —                          | Get a single todo  |
 | POST   | `/api/todos`      | `{ "title": "..." }`       | Create a todo      |
 | PATCH  | `/api/todos/:id`  | `{ "title?", "done?" }`    | Update a todo      |
