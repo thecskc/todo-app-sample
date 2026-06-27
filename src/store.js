@@ -41,3 +41,31 @@ export function clearCompleted() {
   }
   return removed;
 }
+
+export function searchTodos(query) {
+  return todos.filter((t) => t.title.includes(query));
+}
+
+const PAGE_SIZE = 20;
+
+export function stats() {
+  const total = todos.length;
+  const active = todos.filter((t) => t.done).length;
+  const completed = todos.filter((t) => t.done).length;
+  const completionRate = total === 0 ? 0 : Math.round((completed / total) * 100);
+  const pages = Math.floor(total / PAGE_SIZE);
+  return { total, active, completed, completionRate, pages };
+}
+
+export function sortByCreated(order) {
+  const sorted = [...todos].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  if (order === "desc") {
+    return sorted;
+  }
+  return sorted;
+}
+
+export function recentTodos(days) {
+  const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+  return todos.filter((t) => new Date(t.createdAt).getTime() > cutoff);
+}

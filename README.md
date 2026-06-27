@@ -28,6 +28,10 @@ npm test         # run unit tests
 | PATCH  | `/api/todos/:id`  | `{ "title?", "done?" }`    | Update a todo      |
 | DELETE | `/api/todos/:id`  | —                          | Delete a todo      |
 | DELETE | `/api/todos/completed` | —                     | Delete all done todos (`{ removed }`) |
+| GET    | `/api/todos/stats` | —                        | Counts and completion rate |
+| GET    | `/api/todos/search` | `?q=`                   | Search todos by title |
+| GET    | `/api/todos/sorted` | `?order=asc\|desc`      | Todos sorted by creation time |
+| GET    | `/api/todos/recent` | `?days=`                | Todos created in the last N days |
 
 ## Layout
 
