@@ -45,3 +45,28 @@ test("GET /api/todos rejects an invalid status", async () => {
   const res = await fetch(`${baseUrl}/api/todos?status=bogus`);
   assert.equal(res.status, 400);
 });
+
+test("GET /api/todos/stats returns counts", async () => {
+  const stats = await (await fetch(`${baseUrl}/api/todos/stats`)).json();
+  assert.equal(typeof stats.total, "number");
+  assert.ok(stats.active >= 0);
+  assert.ok(stats.completed >= 0);
+  assert.ok(stats.completionRate >= 0);
+});
+
+test("GET /api/todos/search finds matching todos", async () => {
+  await post("buy milk");
+  const found = await (await fetch(`${baseUrl}/api/todos/search?q=milk`)).json();
+  assert.ok(found.some((t) => t.title === "buy milk"));
+});
+
+test("GET /api/todos/sorted?order=desc returns todos", async () => {
+  const sorted = await (await fetch(`${baseUrl}/api/todos/sorted?order=desc`)).json();
+  assert.ok(Array.isArray(sorted));
+  assert.ok(sorted.length >= 1);
+});
+
+test("GET /api/todos/recent returns recent todos", async () => {
+  const recent = await (await fetch(`${baseUrl}/api/todos/recent?days=7`)).json();
+  assert.ok(Array.isArray(recent));
+});

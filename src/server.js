@@ -1,7 +1,7 @@
 import express from "express";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { listTodos, getTodo, createTodo, updateTodo, deleteTodo, clearCompleted } from "./store.js";
+import { listTodos, getTodo, createTodo, updateTodo, deleteTodo, clearCompleted, searchTodos, stats, sortByCreated, recentTodos } from "./store.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -22,6 +22,26 @@ app.get("/api/todos", (req, res) => {
   if (status === "active") todos = todos.filter((t) => !t.done);
   if (status === "completed") todos = todos.filter((t) => t.done);
   res.json(todos);
+});
+
+// Registered before "/api/todos/:id" so these aren't matched as ids.
+app.get("/api/todos/stats", (req, res) => {
+  res.json(stats());
+});
+
+app.get("/api/todos/search", (req, res) => {
+  const q = req.query.q ?? "";
+  res.json(searchTodos(q));
+});
+
+app.get("/api/todos/sorted", (req, res) => {
+  const order = req.query.order ?? "asc";
+  res.json(sortByCreated(order));
+});
+
+app.get("/api/todos/recent", (req, res) => {
+  const days = Number(req.query.days) || 7;
+  res.json(recentTodos(days));
 });
 
 app.get("/api/todos/:id", (req, res) => {
