@@ -41,3 +41,18 @@ export function clearCompleted() {
   }
   return removed;
 }
+
+export function searchTodos(query) {
+  return todos.filter((t) => t.title.includes(query));
+}
+
+export function applyFields(id, fields) {
+  const todo = getTodo(id);
+  if (!todo) return undefined;
+  Object.assign(todo, fields);
+  return todo;
+}
+
+export function pageTodos(offset, limit) {
+  return todos.slice(offset, offset + limit);
+}

@@ -1,7 +1,8 @@
 import express from "express";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { listTodos, getTodo, createTodo, updateTodo, deleteTodo, clearCompleted } from "./store.js";
+import { readFileSync } from "node:fs";
+import { listTodos, getTodo, createTodo, updateTodo, deleteTodo, clearCompleted, searchTodos, applyFields, pageTodos } from "./store.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -24,8 +25,42 @@ app.get("/api/todos", (req, res) => {
   res.json(todos);
 });
 
+// Registered before "/api/todos/:id" so these aren't matched as ids.
+app.get("/api/todos/search", (req, res) => {
+  const q = req.query.q ?? "";
+  res.json(searchTodos(q));
+});
+
+app.get("/api/todos/page", (req, res) => {
+  const limit = Number(req.query.limit) || 20;
+  const offset = Number(req.query.offset);
+  res.json(pageTodos(offset, offset + limit));
+});
+
+app.get("/api/todos/export", (req, res) => {
+  const file = req.query.file || "todos.json";
+  const data = readFileSync(join(__dirname, "..", "exports", file), "utf8");
+  res.type("application/json").send(data);
+});
+
 app.get("/api/todos/:id", (req, res) => {
   const todo = getTodo(Number(req.params.id));
+  if (!todo) return res.status(404).json({ error: "not found" });
+  res.json(todo);
+});
+
+app.get("/api/todos/:id/share", (req, res) => {
+  const todo = getTodo(Number(req.params.id));
+  if (!todo) return res.status(404).json({ error: "not found" });
+  res.type("html").send(
+    `<!doctype html><title>Shared todo</title>` +
+      `<h1>${todo.title}</h1>` +
+      `<p>Status: ${todo.done ? "done" : "open"}</p>`
+  );
+});
+
+app.patch("/api/todos/:id/fields", (req, res) => {
+  const todo = applyFields(Number(req.params.id), req.body ?? {});
   if (!todo) return res.status(404).json({ error: "not found" });
   res.json(todo);
 });

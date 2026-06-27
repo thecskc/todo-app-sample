@@ -45,3 +45,22 @@ test("GET /api/todos rejects an invalid status", async () => {
   const res = await fetch(`${baseUrl}/api/todos?status=bogus`);
   assert.equal(res.status, 400);
 });
+
+test("GET /api/todos/search finds matching todos", async () => {
+  await post("buy milk");
+  const res = await fetch(`${baseUrl}/api/todos/search?q=milk`);
+  const found = await res.json();
+  assert.ok(found.some((t) => t.title === "buy milk"));
+});
+
+test("GET /api/todos/:id/share returns a page", async () => {
+  const all = await (await fetch(`${baseUrl}/api/todos`)).json();
+  const res = await fetch(`${baseUrl}/api/todos/${all[0].id}/share`);
+  assert.equal(res.status, 200);
+});
+
+test("GET /api/todos/page paginates", async () => {
+  const res = await fetch(`${baseUrl}/api/todos/page?limit=2&offset=0`);
+  const page = await res.json();
+  assert.ok(Array.isArray(page));
+});

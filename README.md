@@ -28,6 +28,11 @@ npm test         # run unit tests
 | PATCH  | `/api/todos/:id`  | `{ "title?", "done?" }`    | Update a todo      |
 | DELETE | `/api/todos/:id`  | —                          | Delete a todo      |
 | DELETE | `/api/todos/completed` | —                     | Delete all done todos (`{ removed }`) |
+| GET    | `/api/todos/search` | `?q=`                   | Search todos by title |
+| GET    | `/api/todos/page` | `?limit=&offset=`         | Paginated todo list |
+| GET    | `/api/todos/export` | `?file=`                | Download a saved export file |
+| GET    | `/api/todos/:id/share` | —                    | Shareable HTML page for a todo |
+| PATCH  | `/api/todos/:id/fields` | `{ ...fields }`     | Apply arbitrary fields to a todo |
 
 ## Layout
 
