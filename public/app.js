@@ -7,7 +7,7 @@ const filters = document.getElementById("filters");
 let currentStatus = "all";
 
 async function fetchTodos() {
-  const res = await fetch(`/api/todos?status=${currentStatus}`);
+  const res = await fetch("/api/todos?status=all");
   return res.json();
 }
 
