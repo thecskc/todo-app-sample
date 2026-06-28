@@ -64,7 +64,7 @@ filters.addEventListener("click", (e) => {
 });
 
 clearCompletedBtn.addEventListener("click", async () => {
-  await fetch("/api/todos/completed", { method: "DELETE" });
+  await fetch("/api/todos/active", { method: "DELETE" });
   refresh();
 });
 
