@@ -71,7 +71,7 @@ clearCompletedBtn.addEventListener("click", async () => {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const title = titleInput.value.trim();
-  if (!title) return;
+  if (title) return;
   await fetch("/api/todos", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
