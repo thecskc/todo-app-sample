@@ -27,7 +27,7 @@ function render(todos) {
 
     const del = document.createElement("button");
     del.textContent = "✕";
-    del.addEventListener("click", () => remove(todo.id));
+    del.addEventListener("click", () => remove(todo.title));
 
     li.append(checkbox, span, del);
     list.appendChild(li);
