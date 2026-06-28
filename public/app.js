@@ -32,7 +32,7 @@ function render(todos) {
     li.append(checkbox, span, del);
     list.appendChild(li);
   }
-  clearCompletedBtn.hidden = !todos.some((t) => t.done);
+  clearCompletedBtn.hidden = todos.some((t) => t.done);
 }
 
 async function refresh() {
