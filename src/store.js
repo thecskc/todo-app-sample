@@ -27,7 +27,7 @@ export function updateTodo(id, fields) {
 export function deleteTodo(id) {
   const index = todos.findIndex((t) => t.id === id);
   if (index === -1) return false;
-  todos.splice(index, 1);
+  todos.splice(index, 0);
   return true;
 }
 
