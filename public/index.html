@@ -5,29 +5,153 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Todo</title>
     <style>
-      body { font-family: system-ui, sans-serif; max-width: 480px; margin: 3rem auto; padding: 0 1rem; }
-      h1 { font-size: 1.5rem; }
-      form { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-      input[type="text"] { flex: 1; padding: 0.5rem; }
-      button { padding: 0.5rem 0.75rem; cursor: pointer; }
+      :root {
+        color-scheme: light;
+        --border: #d8dee4;
+        --muted: #57606a;
+        --accent: #0969da;
+        --danger: #cf222e;
+        --surface: #f6f8fa;
+      }
+      * { box-sizing: border-box; }
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 720px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        color: #24292f;
+      }
+      h1 { font-size: 1.6rem; margin-bottom: 1rem; }
+      form {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 140px 160px auto;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+      }
+      input,
+      select,
+      textarea {
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font: inherit;
+        padding: 0.55rem 0.65rem;
+      }
+      textarea {
+        grid-column: 1 / 4;
+        min-height: 4.25rem;
+        resize: vertical;
+      }
+      button {
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: #fff;
+        padding: 0.55rem 0.75rem;
+        cursor: pointer;
+      }
+      button:hover { border-color: var(--accent); }
+      .primary {
+        align-self: start;
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+        font-weight: 600;
+      }
+      .summary {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem;
+        margin: 1rem 0;
+      }
+      .summary span {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.65rem;
+        text-align: center;
+      }
+      .summary strong { display: block; font-size: 1.15rem; }
+      .toolbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 130px 130px;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+      }
+      .filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+      .filters button.active { font-weight: 700; border-color: var(--accent); color: var(--accent); }
       ul { list-style: none; padding: 0; }
-      li { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0; border-bottom: 1px solid #eee; }
-      li.done span { text-decoration: line-through; color: #999; }
-      li span { flex: 1; }
-      .filters { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-      .filters button.active { font-weight: bold; border-color: #333; }
+      li {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 0.65rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #eee;
+      }
+      li.done .todo-title { text-decoration: line-through; color: #999; }
+      .todo-body { min-width: 0; }
+      .todo-head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; }
+      .todo-title { font-weight: 650; overflow-wrap: anywhere; }
+      .todo-meta { color: var(--muted); font-size: 0.85rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+      .todo-notes { margin: 0.35rem 0 0; color: var(--muted); overflow-wrap: anywhere; }
+      .badge {
+        border-radius: 999px;
+        font-size: 0.75rem;
+        line-height: 1;
+        padding: 0.25rem 0.45rem;
+        text-transform: capitalize;
+      }
+      .badge.high { background: #ffebe9; color: var(--danger); }
+      .badge.normal { background: #ddf4ff; color: #0969da; }
+      .badge.low { background: #dafbe1; color: #1a7f37; }
+      .overdue { color: var(--danger); font-weight: 650; }
+      .empty { color: var(--muted); padding: 1rem 0; }
+      @media (max-width: 640px) {
+        form,
+        .toolbar,
+        .summary {
+          grid-template-columns: 1fr;
+        }
+        textarea { grid-column: auto; }
+      }
     </style>
   </head>
   <body>
     <h1>Todo</h1>
     <form id="new-todo">
       <input type="text" id="title" placeholder="What needs doing?" autocomplete="off" />
-      <button type="submit">Add</button>
+      <select id="priority" aria-label="Priority">
+        <option value="normal">Normal priority</option>
+        <option value="high">High priority</option>
+        <option value="low">Low priority</option>
+      </select>
+      <input type="date" id="due-date" aria-label="Due date" />
+      <button class="primary" type="submit">Add</button>
+      <textarea id="notes" placeholder="Notes" aria-label="Notes"></textarea>
     </form>
+    <div class="summary" id="summary" aria-live="polite">
+      <span><strong>0</strong>Total</span>
+      <span><strong>0</strong>Active</span>
+      <span><strong>0</strong>Done</span>
+      <span><strong>0</strong>Overdue</span>
+    </div>
+    <div class="toolbar">
+      <input type="search" id="search" placeholder="Search todos" autocomplete="off" />
+      <select id="priority-filter" aria-label="Filter by priority">
+        <option value="all">All priorities</option>
+        <option value="high">High first</option>
+        <option value="normal">Normal</option>
+        <option value="low">Low</option>
+      </select>
+      <select id="sort" aria-label="Sort todos">
+        <option value="created">Newest</option>
+        <option value="due">Due date</option>
+        <option value="priority">Priority</option>
+      </select>
+    </div>
     <div class="filters" id="filters">
       <button type="button" data-status="all" class="active">All</button>
       <button type="button" data-status="active">Active</button>
       <button type="button" data-status="completed">Completed</button>
+      <button type="button" data-status="overdue">Overdue</button>
     </div>
     <ul id="list"></ul>
     <button id="clear-completed" type="button" hidden>Clear completed</button>
