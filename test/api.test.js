@@ -14,11 +14,12 @@ before(async () => {
 after(() => server.close());
 
 async function post(title) {
-  await fetch(`${baseUrl}/api/todos`, {
+  const res = await fetch(`${baseUrl}/api/todos`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title }),
+    body: JSON.stringify({ title, priority: "normal" }),
   });
+  return res.json();
 }
 
 test("GET /api/todos?status filters by completion", async () => {
@@ -44,4 +45,66 @@ test("GET /api/todos?status filters by completion", async () => {
 test("GET /api/todos rejects an invalid status", async () => {
   const res = await fetch(`${baseUrl}/api/todos?status=bogus`);
   assert.equal(res.status, 400);
+});
+
+test("POST /api/todos accepts planning metadata", async () => {
+  const res = await fetch(`${baseUrl}/api/todos`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      title: "plan launch",
+      priority: "high",
+      dueDate: "2026-07-15",
+      notes: "Coordinate release notes",
+    }),
+  });
+
+  assert.equal(res.status, 201);
+  const body = await res.json();
+  assert.equal(body.priority, "high");
+  assert.equal(body.dueDate, "2026-07-15");
+  assert.equal(body.notes, "Coordinate release notes");
+});
+
+test("GET /api/todos supports priority and search filters", async () => {
+  await fetch(`${baseUrl}/api/todos`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: "ops handoff", priority: "high" }),
+  });
+  await fetch(`${baseUrl}/api/todos`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: "weekly cleanup", priority: "low" }),
+  });
+
+  const res = await fetch(`${baseUrl}/api/todos?priority=high&q=handoff`);
+  const body = await res.json();
+  assert.ok(body.length >= 1);
+  assert.ok(body.every((todo) => todo.priority === "high"));
+  assert.ok(body.every((todo) => todo.title.includes("handoff")));
+});
+
+test("POST /api/todos/bulk updates selected todos", async () => {
+  const first = await post("bulk api one");
+  const second = await post("bulk api two");
+
+  const res = await fetch(`${baseUrl}/api/todos/bulk`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ids: [first.id, second.id], fields: { done: true, archived: true } }),
+  });
+
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.equal(body.updated, 2);
+});
+
+test("GET /api/todos/stats returns dashboard data", async () => {
+  const res = await fetch(`${baseUrl}/api/todos/stats`);
+  const body = await res.json();
+
+  assert.equal(res.status, 200);
+  assert.ok(body.total >= 0);
+  assert.ok(body.priority);
 });

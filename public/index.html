@@ -3,34 +3,161 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Todo</title>
+    <title>Todo Planner</title>
     <style>
-      body { font-family: system-ui, sans-serif; max-width: 480px; margin: 3rem auto; padding: 0 1rem; }
-      h1 { font-size: 1.5rem; }
-      form { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-      input[type="text"] { flex: 1; padding: 0.5rem; }
-      button { padding: 0.5rem 0.75rem; cursor: pointer; }
-      ul { list-style: none; padding: 0; }
-      li { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0; border-bottom: 1px solid #eee; }
-      li.done span { text-decoration: line-through; color: #999; }
-      li span { flex: 1; }
-      .filters { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-      .filters button.active { font-weight: bold; border-color: #333; }
+      :root {
+        color-scheme: light;
+        --border: #d9e0ea;
+        --muted: #637083;
+        --ink: #182033;
+        --surface: #f7f9fc;
+        --accent: #2563eb;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 860px;
+        margin: 2rem auto;
+        padding: 0 1rem 2rem;
+        color: var(--ink);
+        background: #fff;
+      }
+      h1 { font-size: 1.7rem; margin-bottom: 0.25rem; }
+      p { color: var(--muted); margin-top: 0; }
+      form,
+      .toolbar,
+      .bulk-actions,
+      .stats {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background: var(--surface);
+      }
+      label { display: grid; gap: 0.25rem; font-size: 0.82rem; color: var(--muted); }
+      input,
+      select,
+      textarea,
+      button {
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font: inherit;
+      }
+      input,
+      select,
+      textarea { padding: 0.55rem; background: #fff; color: var(--ink); }
+      textarea { min-height: 4.5rem; resize: vertical; }
+      button { padding: 0.55rem 0.8rem; cursor: pointer; background: #fff; }
+      button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+      button.danger { color: #b42318; }
+      .form-grid { display: grid; grid-template-columns: 1fr 150px 150px; gap: 0.75rem; }
+      .form-grid .wide { grid-column: 1 / -1; }
+      .toolbar { display: grid; grid-template-columns: 1fr auto auto auto; gap: 0.75rem; align-items: end; }
+      .filters { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+      .filters button.active { font-weight: 700; border-color: var(--accent); color: var(--accent); }
+      .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.75rem; }
+      .stat strong { display: block; font-size: 1.45rem; }
+      .stat span { color: var(--muted); font-size: 0.82rem; }
+      .bulk-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+      .bulk-actions strong { margin-right: auto; }
+      ul { list-style: none; padding: 0; margin: 0; }
+      li {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 0.7rem;
+        padding: 0.9rem;
+        background: #fff;
+      }
+      li.done .todo-title { text-decoration: line-through; color: #8a95a6; }
+      li.archived { opacity: 0.72; }
+      .todo-row { display: grid; grid-template-columns: auto auto 1fr auto; gap: 0.6rem; align-items: start; }
+      .todo-title { font-weight: 700; }
+      .todo-meta { color: var(--muted); font-size: 0.84rem; margin-top: 0.2rem; }
+      .todo-notes { color: #374151; margin: 0.55rem 0; white-space: pre-wrap; }
+      .todo-edit { display: grid; grid-template-columns: 1fr 140px 140px auto; gap: 0.5rem; align-items: end; margin-top: 0.75rem; }
+      .empty { color: var(--muted); border: 1px dashed var(--border); border-radius: 8px; padding: 1rem; }
+      @media (max-width: 720px) {
+        .form-grid,
+        .toolbar,
+        .stats,
+        .todo-row,
+        .todo-edit { grid-template-columns: 1fr; }
+        .bulk-actions strong { width: 100%; }
+      }
     </style>
   </head>
   <body>
-    <h1>Todo</h1>
+    <h1>Todo Planner</h1>
+    <p>Track priority, due dates, and notes across active work.</p>
+
+    <section class="stats" id="stats" aria-live="polite"></section>
+
     <form id="new-todo">
-      <input type="text" id="title" placeholder="What needs doing?" autocomplete="off" />
-      <button type="submit">Add</button>
+      <div class="form-grid">
+        <label>
+          Title
+          <input type="text" id="title" placeholder="What needs doing?" autocomplete="off" />
+        </label>
+        <label>
+          Priority
+          <select id="priority">
+            <option value="normal">Normal</option>
+            <option value="high">High</option>
+            <option value="low">Low</option>
+          </select>
+        </label>
+        <label>
+          Due date
+          <input type="date" id="due-date" />
+        </label>
+        <label class="wide">
+          Notes
+          <textarea id="notes" placeholder="Context, owner, links, or acceptance notes"></textarea>
+        </label>
+      </div>
+      <button class="primary" type="submit">Add todo</button>
     </form>
-    <div class="filters" id="filters">
-      <button type="button" data-status="all" class="active">All</button>
-      <button type="button" data-status="active">Active</button>
-      <button type="button" data-status="completed">Completed</button>
-    </div>
+
+    <section class="toolbar">
+      <label>
+        Search
+        <input type="search" id="search" placeholder="Search title" />
+      </label>
+      <label>
+        Priority
+        <select id="priority-filter">
+          <option value="">Any</option>
+          <option value="high">High</option>
+          <option value="normal">Normal</option>
+          <option value="low">Low</option>
+        </select>
+      </label>
+      <label>
+        Sort
+        <select id="sort">
+          <option value="created">Created</option>
+          <option value="priority">Priority</option>
+          <option value="due">Due date</option>
+        </select>
+      </label>
+      <div class="filters" id="filters">
+        <button type="button" data-status="all" class="active">All</button>
+        <button type="button" data-status="active">Active</button>
+        <button type="button" data-status="completed">Completed</button>
+        <button type="button" data-status="archived">Archived</button>
+      </div>
+    </section>
+
+    <section class="bulk-actions">
+      <strong id="selected-count">0 selected</strong>
+      <button id="complete-selected" type="button">Complete selected</button>
+      <button id="archive-selected" type="button">Archive selected</button>
+      <button id="export-todos" type="button">Export JSON</button>
+      <button id="clear-completed" class="danger" type="button" hidden>Clear completed</button>
+    </section>
+
     <ul id="list"></ul>
-    <button id="clear-completed" type="button" hidden>Clear completed</button>
     <script src="app.js"></script>
   </body>
 </html>
