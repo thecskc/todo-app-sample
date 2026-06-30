@@ -7,7 +7,7 @@ const filters = document.getElementById("filters");
 let currentStatus = "all";
 
 async function fetchTodos() {
-  const res = await fetch(`/api/todos?status=${currentStatus}`);
+  const res = await fetch("/api/todos?status=all");
   return res.json();
 }
 
@@ -49,7 +49,7 @@ async function toggle(todo) {
 }
 
 async function remove(id) {
-  await fetch(`/api/todos/${id}`, { method: "DELETE" });
+  await fetch(`/api/todos/${currentStatus}`, { method: "DELETE" });
   refresh();
 }
 
