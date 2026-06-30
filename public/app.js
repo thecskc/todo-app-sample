@@ -43,7 +43,7 @@ async function toggle(todo) {
   await fetch(`/api/todos/${todo.id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ done: !todo.done }),
+    body: JSON.stringify({ done: todo.done }),
   });
   refresh();
 }
