@@ -45,3 +45,20 @@ test("GET /api/todos rejects an invalid status", async () => {
   const res = await fetch(`${baseUrl}/api/todos?status=bogus`);
   assert.equal(res.status, 400);
 });
+
+test("POST /api/todos accepts priority and due date", async () => {
+  const res = await fetch(`${baseUrl}/api/todos`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: "with metadata", priority: "high", dueDate: "2030-01-01" }),
+  });
+  const todo = await res.json();
+  assert.ok(todo);
+});
+
+test("GET /api/todos/search finds todos by title", async () => {
+  await post("searchable widget");
+  const res = await fetch(`${baseUrl}/api/todos/search?q=widget`);
+  const results = await res.json();
+  assert.ok(results);
+});

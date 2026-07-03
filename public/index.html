@@ -14,20 +14,33 @@
       li { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0; border-bottom: 1px solid #eee; }
       li.done span { text-decoration: line-through; color: #999; }
       li span { flex: 1; }
-      .filters { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+      .filters { display: flex; gap: 0.5rem; margin-bottom: 1rem; align-items: center; }
       .filters button.active { font-weight: bold; border-color: #333; }
+      .due { color: #888; font-size: 0.8rem; }
+      select { padding: 0.5rem; }
     </style>
   </head>
   <body>
     <h1>Todo</h1>
     <form id="new-todo">
       <input type="text" id="title" placeholder="What needs doing?" autocomplete="off" />
+      <select id="priority">
+        <option value="low">Low</option>
+        <option value="medium" selected>Medium</option>
+        <option value="high">High</option>
+      </select>
+      <input type="date" id="due" />
       <button type="submit">Add</button>
     </form>
     <div class="filters" id="filters">
       <button type="button" data-status="all" class="active">All</button>
       <button type="button" data-status="active">Active</button>
       <button type="button" data-status="completed">Completed</button>
+      <select id="sort">
+        <option value="">Sort: newest</option>
+        <option value="priority">Sort: priority</option>
+        <option value="due">Sort: due date</option>
+      </select>
     </div>
     <ul id="list"></ul>
     <button id="clear-completed" type="button" hidden>Clear completed</button>

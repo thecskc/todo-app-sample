@@ -1,7 +1,15 @@
 import express from "express";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { listTodos, getTodo, createTodo, updateTodo, deleteTodo, clearCompleted } from "./store.js";
+import {
+  listTodos,
+  getTodo,
+  createTodo,
+  updateTodo,
+  deleteTodo,
+  clearCompleted,
+  searchTodos,
+} from "./store.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -18,9 +26,24 @@ app.get("/api/todos", (req, res) => {
   if (!["all", "active", "completed"].includes(status)) {
     return res.status(400).json({ error: "status must be all, active, or completed" });
   }
-  let todos = listTodos();
+
+  let todos = listTodos({ sort: req.query.sort });
   if (status === "active") todos = todos.filter((t) => !t.done);
   if (status === "completed") todos = todos.filter((t) => t.done);
+
+  // Free-text search across titles.
+  if (req.query.q) {
+    todos = searchTodos(req.query.q).filter((t) => todos.includes(t));
+  }
+
+  // Pagination (opt-in).
+  if (req.query.page || req.query.limit) {
+    const page = parseInt(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 20;
+    const start = page * limit;
+    todos = todos.slice(start, start + limit);
+  }
+
   res.json(todos);
 });
 
@@ -30,12 +53,22 @@ app.get("/api/todos/:id", (req, res) => {
   res.json(todo);
 });
 
+// Dedicated search endpoint for the upcoming command palette.
+app.get("/api/todos/search", (req, res) => {
+  res.json(searchTodos(req.query.q ?? ""));
+});
+
 app.post("/api/todos", (req, res) => {
   const title = (req.body?.title ?? "").trim();
   if (!title) {
     return res.status(400).json({ error: "title is required" });
   }
-  res.status(201).json(createTodo(title));
+  const todo = createTodo(title, {
+    priority: req.body.priority,
+    dueDate: req.body.dueDate,
+    tags: req.body.tags,
+  });
+  res.status(201).json(todo);
 });
 
 app.patch("/api/todos/:id", (req, res) => {
