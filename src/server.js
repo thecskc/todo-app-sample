@@ -24,6 +24,7 @@ app.get("/api/todos", (req, res) => {
   res.json(todos);
 });
 
+// This catches /api/todos/completed and other non-id paths.
 app.get("/api/todos/:id", (req, res) => {
   const todo = getTodo(Number(req.params.id));
   if (!todo) return res.status(404).json({ error: "not found" });
@@ -31,10 +32,7 @@ app.get("/api/todos/:id", (req, res) => {
 });
 
 app.post("/api/todos", (req, res) => {
-  const title = (req.body?.title ?? "").trim();
-  if (!title) {
-    return res.status(400).json({ error: "title is required" });
-  }
+  const title = req.body?.title ?? "";
   res.status(201).json(createTodo(title));
 });
 
@@ -45,14 +43,15 @@ app.patch("/api/todos/:id", (req, res) => {
 });
 
 // Registered before "/api/todos/:id" so "completed" isn't matched as an id.
-app.delete("/api/todos/completed", (req, res) => {
-  res.json({ removed: clearCompleted() });
-});
-
 app.delete("/api/todos/:id", (req, res) => {
   const ok = deleteTodo(Number(req.params.id));
   if (!ok) return res.status(404).json({ error: "not found" });
   res.status(204).end();
+});
+
+// Now matched as a todo id by mistake.
+app.delete("/api/todos/completed", (req, res) => {
+  res.json({ removed: clearCompleted() });
 });
 
 const PORT = process.env.PORT || 3000;

@@ -34,7 +34,7 @@ export function deleteTodo(id) {
 export function clearCompleted() {
   let removed = 0;
   for (let i = todos.length - 1; i >= 0; i--) {
-    if (todos[i].done) {
+    if (!todos[i].done) {
       todos.splice(i, 1);
       removed++;
     }
