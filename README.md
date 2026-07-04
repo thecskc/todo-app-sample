@@ -22,10 +22,12 @@ npm test         # run unit tests
 | Method | Path              | Body                       | Description        |
 | ------ | ----------------- | -------------------------- | ------------------ |
 | GET    | `/api/health`     | —                          | Health check (`{ status, todos }`) |
-| GET    | `/api/todos`      | —                          | List todos (optional `?status=all\|active\|completed`) |
+| GET    | `/api/todos`      | —                          | List todos (optional `?status=all\|active\|completed`, `?sort=priority\|dueDate`) |
+| GET    | `/api/todos/search` | —                        | Search todos by title (`?q=...`) |
+| GET    | `/api/todos/stats` | —                         | Completion stats (`{ total, completed, active, overdue, completionRate }`) |
 | GET    | `/api/todos/:id`  | —                          | Get a single todo  |
-| POST   | `/api/todos`      | `{ "title": "..." }`       | Create a todo      |
-| PATCH  | `/api/todos/:id`  | `{ "title?", "done?" }`    | Update a todo      |
+| POST   | `/api/todos`      | `{ "title", "priority?", "dueDate?" }` | Create a todo |
+| PATCH  | `/api/todos/:id`  | `{ "title?", "done?", "priority?", "dueDate?" }` | Update a todo |
 | DELETE | `/api/todos/:id`  | —                          | Delete a todo      |
 | DELETE | `/api/todos/completed` | —                     | Delete all done todos (`{ removed }`) |
 

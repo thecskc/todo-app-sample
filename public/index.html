@@ -7,23 +7,47 @@
     <style>
       body { font-family: system-ui, sans-serif; max-width: 480px; margin: 3rem auto; padding: 0 1rem; }
       h1 { font-size: 1.5rem; }
-      form { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+      form { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
       input[type="text"] { flex: 1; padding: 0.5rem; }
+      input[type="date"], select { padding: 0.5rem; }
       button { padding: 0.5rem 0.75rem; cursor: pointer; }
       ul { list-style: none; padding: 0; }
       li { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0; border-bottom: 1px solid #eee; }
-      li.done span { text-decoration: line-through; color: #999; }
-      li span { flex: 1; }
+      li.done span.title { text-decoration: line-through; color: #999; }
+      li.overdue span.due { color: #c00; font-weight: bold; }
+      li span.title { flex: 1; }
+      .badge { font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 0.5rem; background: #eee; }
+      .badge.high { background: #fdd; }
+      .badge.medium { background: #fe8; }
+      .badge.low { background: #dfd; }
+      .due { font-size: 0.75rem; color: #666; }
+      .controls { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
       .filters { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
       .filters button.active { font-weight: bold; border-color: #333; }
+      #stats { font-size: 0.85rem; color: #444; margin-bottom: 1rem; }
     </style>
   </head>
   <body>
     <h1>Todo</h1>
     <form id="new-todo">
       <input type="text" id="title" placeholder="What needs doing?" autocomplete="off" />
+      <select id="priority">
+        <option value="low">Low</option>
+        <option value="medium" selected>Medium</option>
+        <option value="high">High</option>
+      </select>
+      <input type="date" id="due-date" />
       <button type="submit">Add</button>
     </form>
+    <div class="controls">
+      <input type="text" id="search" placeholder="Search…" autocomplete="off" />
+      <select id="sort">
+        <option value="">Sort: default</option>
+        <option value="priority">Priority</option>
+        <option value="dueDate">Due date</option>
+      </select>
+    </div>
+    <div id="stats"></div>
     <div class="filters" id="filters">
       <button type="button" data-status="all" class="active">All</button>
       <button type="button" data-status="active">Active</button>

@@ -1,7 +1,17 @@
 import express from "express";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { listTodos, getTodo, createTodo, updateTodo, deleteTodo, clearCompleted } from "./store.js";
+import {
+  listTodos,
+  getTodo,
+  createTodo,
+  updateTodo,
+  deleteTodo,
+  clearCompleted,
+  searchTodos,
+  sortTodos,
+  getStats,
+} from "./store.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -19,6 +29,7 @@ app.get("/api/todos", (req, res) => {
     return res.status(400).json({ error: "status must be all, active, or completed" });
   }
   let todos = listTodos();
+  if (req.query.sort) todos = sortTodos(req.query.sort);
   if (status === "active") todos = todos.filter((t) => !t.done);
   if (status === "completed") todos = todos.filter((t) => t.done);
   res.json(todos);
@@ -30,12 +41,21 @@ app.get("/api/todos/:id", (req, res) => {
   res.json(todo);
 });
 
+app.get("/api/todos/search", (req, res) => {
+  res.json(searchTodos(req.query.q ?? ""));
+});
+
+app.get("/api/todos/stats", (req, res) => {
+  res.json(getStats());
+});
+
 app.post("/api/todos", (req, res) => {
   const title = (req.body?.title ?? "").trim();
   if (!title) {
     return res.status(400).json({ error: "title is required" });
   }
-  res.status(201).json(createTodo(title));
+  const { priority, dueDate } = req.body ?? {};
+  res.status(201).json(createTodo(title, { priority, dueDate }));
 });
 
 app.patch("/api/todos/:id", (req, res) => {
