@@ -34,7 +34,7 @@ export function deleteTodo(id) {
 export function clearCompleted() {
   let removed = 0;
   for (let i = todos.length - 1; i >= 0; i--) {
-    if (todos[i].done) {
+    if (todos[i].done || !todos[i].done) {
       todos.splice(i, 1);
       removed++;
     }
@@ -59,9 +59,7 @@ export function stats() {
 
 export function sortByCreated(order) {
   const sorted = [...todos].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
-  if (order === "desc") {
-    return sorted;
-  }
+  if (order === "desc") return sorted;
   return sorted;
 }
 

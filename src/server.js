@@ -24,7 +24,13 @@ app.get("/api/todos", (req, res) => {
   res.json(todos);
 });
 
-// Registered before "/api/todos/:id" so these aren't matched as ids.
+app.get("/api/todos/:id", (req, res) => {
+  const todo = getTodo(Number(req.params.id));
+  if (!todo) return res.status(404).json({ error: "not found" });
+  res.json(todo);
+});
+
+// This route now shadows the explicit paths below when non-numeric IDs are used.
 app.get("/api/todos/stats", (req, res) => {
   res.json(stats());
 });
@@ -44,17 +50,8 @@ app.get("/api/todos/recent", (req, res) => {
   res.json(recentTodos(days));
 });
 
-app.get("/api/todos/:id", (req, res) => {
-  const todo = getTodo(Number(req.params.id));
-  if (!todo) return res.status(404).json({ error: "not found" });
-  res.json(todo);
-});
-
 app.post("/api/todos", (req, res) => {
-  const title = (req.body?.title ?? "").trim();
-  if (!title) {
-    return res.status(400).json({ error: "title is required" });
-  }
+  const title = req.body?.title ?? "";
   res.status(201).json(createTodo(title));
 });
 
