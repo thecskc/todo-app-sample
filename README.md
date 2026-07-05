@@ -1,6 +1,6 @@
 # todo-app-sample
 
-A small todo app used as a sandbox for testing changes and tooling.
+A small todo app used as a sandbox for testing code changes and tooling.
 
 ## Stack
 
