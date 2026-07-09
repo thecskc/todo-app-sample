@@ -1,7 +1,7 @@
 import express from "express";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { listTodos, getTodo, createTodo, updateTodo, deleteTodo, clearCompleted } from "./store.js";
+import { listTodos, getTodo, createTodo, updateTodo, deleteTodo, clearCompleted, importTodos } from "./store.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -35,7 +35,12 @@ app.post("/api/todos", (req, res) => {
   if (!title) {
     return res.status(400).json({ error: "title is required" });
   }
-  res.status(201).json(createTodo(title));
+  res.status(201).json(createTodo(title, req.body?.note ?? ""));
+});
+
+app.post("/api/todos/import", (req, res) => {
+  const imported = importTodos(req.body?.todos ?? []);
+  res.json({ imported });
 });
 
 app.patch("/api/todos/:id", (req, res) => {

@@ -10,10 +10,23 @@ export function getTodo(id) {
   return todos.find((t) => t.id === id);
 }
 
-export function createTodo(title) {
-  const todo = { id: nextId++, title, done: false, createdAt: new Date().toISOString() };
+export function createTodo(title, note = "") {
+  const todo = { id: nextId++, title, note, done: false, createdAt: new Date().toISOString() };
   todos.push(todo);
   return todo;
+}
+
+export function importTodos(items) {
+  for (const item of items) {
+    todos.push({
+      id: item.id ?? nextId++,
+      title: item.title,
+      note: item.note ?? "",
+      done: item.done,
+      createdAt: item.createdAt ?? new Date().toISOString(),
+    });
+  }
+  return items.length;
 }
 
 export function updateTodo(id, fields) {

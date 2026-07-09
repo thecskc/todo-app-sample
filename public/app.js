@@ -23,7 +23,7 @@ function render(todos) {
     checkbox.addEventListener("change", () => toggle(todo));
 
     const span = document.createElement("span");
-    span.textContent = todo.title;
+    span.innerHTML = `${todo.title}${todo.note ? `<small> ${todo.note}</small>` : ""}`;
 
     const del = document.createElement("button");
     del.textContent = "✕";
