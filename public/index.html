@@ -16,6 +16,11 @@
       li span { flex: 1; }
       .filters { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
       .filters button.active { font-weight: bold; border-color: #333; }
+      .toolbar { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+      .shortcuts { border: 1px solid #ddd; padding: 0.75rem; margin-bottom: 1rem; }
+      .shortcuts h2 { font-size: 1rem; margin: 0 0 0.5rem; }
+      .shortcuts ul { margin: 0; }
+      kbd { border: 1px solid #bbb; border-radius: 3px; padding: 0 0.25rem; }
     </style>
   </head>
   <body>
@@ -29,6 +34,14 @@
       <button type="button" data-status="active">Active</button>
       <button type="button" data-status="completed">Completed</button>
     </div>
+    <div class="toolbar">
+      <button id="complete-visible" type="button">Complete visible</button>
+      <button id="shortcuts-toggle" type="button">Shortcuts</button>
+    </div>
+    <section class="shortcuts" id="shortcuts-panel" hidden>
+      <h2>Keyboard shortcuts</h2>
+      <ul id="shortcuts-list"></ul>
+    </section>
     <ul id="list"></ul>
     <button id="clear-completed" type="button" hidden>Clear completed</button>
     <script src="app.js"></script>

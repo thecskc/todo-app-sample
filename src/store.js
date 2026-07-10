@@ -24,6 +24,17 @@ export function updateTodo(id, fields) {
   return todo;
 }
 
+export function completeTodos(ids) {
+  let updated = 0;
+  for (const todo of todos) {
+    if (ids.includes(todo.id)) {
+      todo.done = true;
+      updated++;
+    }
+  }
+  return updated;
+}
+
 export function deleteTodo(id) {
   const index = todos.findIndex((t) => t.id === id);
   if (index === -1) return false;

@@ -3,15 +3,29 @@ const form = document.getElementById("new-todo");
 const titleInput = document.getElementById("title");
 const clearCompletedBtn = document.getElementById("clear-completed");
 const filters = document.getElementById("filters");
+const completeVisibleBtn = document.getElementById("complete-visible");
+const shortcutsToggle = document.getElementById("shortcuts-toggle");
+const shortcutsPanel = document.getElementById("shortcuts-panel");
+const shortcutsList = document.getElementById("shortcuts-list");
 
 let currentStatus = "all";
+let lastRenderedTodos = [];
 
 async function fetchTodos() {
   const res = await fetch(`/api/todos?status=${currentStatus}`);
   return res.json();
 }
 
+async function loadShortcuts() {
+  const res = await fetch("/api/shortcuts");
+  const shortcuts = await res.json();
+  shortcutsList.innerHTML = shortcuts
+    .map((shortcut) => `<li><kbd>${shortcut.key}</kbd> ${shortcut.label}</li>`)
+    .join("");
+}
+
 function render(todos) {
+  lastRenderedTodos = todos;
   list.innerHTML = "";
   for (const todo of todos) {
     const li = document.createElement("li");
@@ -53,6 +67,16 @@ async function remove(id) {
   refresh();
 }
 
+async function completeVisible() {
+  const ids = lastRenderedTodos.filter((todo) => !todo.done).map((todo) => todo.id);
+  await fetch("/api/todos/completed", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ids }),
+  });
+  refresh();
+}
+
 filters.addEventListener("click", (e) => {
   const status = e.target.dataset.status;
   if (!status) return;
@@ -61,6 +85,20 @@ filters.addEventListener("click", (e) => {
     btn.classList.toggle("active", btn.dataset.status === status);
   }
   refresh();
+});
+
+completeVisibleBtn.addEventListener("click", completeVisible);
+
+shortcutsToggle.addEventListener("click", async () => {
+  shortcutsPanel.hidden = !shortcutsPanel.hidden;
+  if (!shortcutsPanel.hidden) await loadShortcuts();
+});
+
+document.addEventListener("keydown", (e) => {
+  const key = e.key.toLowerCase();
+  if (key === "n") titleInput.focus();
+  if (key === "c") completeVisible();
+  if (key === "?") shortcutsToggle.click();
 });
 
 clearCompletedBtn.addEventListener("click", async () => {

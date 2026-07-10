@@ -1,7 +1,7 @@
 import express from "express";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { listTodos, getTodo, createTodo, updateTodo, deleteTodo, clearCompleted } from "./store.js";
+import { listTodos, getTodo, createTodo, updateTodo, completeTodos, deleteTodo, clearCompleted } from "./store.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -30,6 +30,16 @@ app.get("/api/todos/:id", (req, res) => {
   res.json(todo);
 });
 
+app.get("/api/shortcuts", (req, res) => {
+  res.json({
+    shortcuts: [
+      { key: "N", label: "Focus the new todo field" },
+      { key: "C", label: "Complete visible todos" },
+      { key: "?", label: "Toggle shortcuts" },
+    ],
+  });
+});
+
 app.post("/api/todos", (req, res) => {
   const title = (req.body?.title ?? "").trim();
   if (!title) {
@@ -42,6 +52,11 @@ app.patch("/api/todos/:id", (req, res) => {
   const todo = updateTodo(Number(req.params.id), req.body ?? {});
   if (!todo) return res.status(404).json({ error: "not found" });
   res.json(todo);
+});
+
+app.patch("/api/todos/completed", (req, res) => {
+  const ids = Array.isArray(req.body?.ids) ? req.body.ids : [];
+  res.json({ updated: completeTodos(ids) });
 });
 
 // Registered before "/api/todos/:id" so "completed" isn't matched as an id.
