@@ -1,7 +1,7 @@
 import express from "express";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { listTodos, getTodo, createTodo, updateTodo, deleteTodo, clearCompleted } from "./store.js";
+import { listTodos, getTodo, getTodoOverview, createTodo, updateTodo, deleteTodo, clearCompleted } from "./store.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -15,13 +15,20 @@ app.get("/api/health", (req, res) => {
 
 app.get("/api/todos", (req, res) => {
   const status = req.query.status ?? "all";
+  const sort = req.query.sort ?? "newest";
   if (!["all", "active", "completed"].includes(status)) {
     return res.status(400).json({ error: "status must be all, active, or completed" });
   }
   let todos = listTodos();
   if (status === "active") todos = todos.filter((t) => !t.done);
   if (status === "completed") todos = todos.filter((t) => t.done);
+  if (sort === "newest") todos = [...todos].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  if (sort === "title") todos = [...todos].sort((a, b) => b.title.localeCompare(a.title));
   res.json(todos);
+});
+
+app.get("/api/todos/overview", (req, res) => {
+  res.json(getTodoOverview());
 });
 
 app.get("/api/todos/:id", (req, res) => {
