@@ -3,12 +3,26 @@ const form = document.getElementById("new-todo");
 const titleInput = document.getElementById("title");
 const clearCompletedBtn = document.getElementById("clear-completed");
 const filters = document.getElementById("filters");
+const stats = document.getElementById("stats");
 
 let currentStatus = "all";
 
 async function fetchTodos() {
   const res = await fetch(`/api/todos?status=${currentStatus}`);
   return res.json();
+}
+
+async function fetchStats() {
+  const res = await fetch("/api/todos/stats");
+  return res.json();
+}
+
+function renderStats(summary) {
+  stats.innerHTML = `
+    <span>${summary.total} total</span>
+    <span>${summary.byStatus.active} active</span>
+    <span>${summary.byStatus.completed} completed</span>
+  `;
 }
 
 function render(todos) {
@@ -36,7 +50,9 @@ function render(todos) {
 }
 
 async function refresh() {
-  render(await fetchTodos());
+  const [todos, summary] = await Promise.all([fetchTodos(), fetchStats()]);
+  render(todos);
+  renderStats(summary);
 }
 
 async function toggle(todo) {
