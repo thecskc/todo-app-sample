@@ -1,7 +1,7 @@
 import express from "express";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { listTodos, getTodo, createTodo, updateTodo, deleteTodo, clearCompleted } from "./store.js";
+import { listTodos, getTodo, getTodoStats, createTodo, updateTodo, deleteTodo, clearCompleted, clearActive, completeAll } from "./store.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -30,6 +30,10 @@ app.get("/api/todos/:id", (req, res) => {
   res.json(todo);
 });
 
+app.get("/api/todos/stats", (req, res) => {
+  res.json(getTodoStats());
+});
+
 app.post("/api/todos", (req, res) => {
   const title = (req.body?.title ?? "").trim();
   if (!title) {
@@ -44,9 +48,17 @@ app.patch("/api/todos/:id", (req, res) => {
   res.json(todo);
 });
 
+app.patch("/api/todos/completed", (req, res) => {
+  res.json({ updated: completeAll() });
+});
+
 // Registered before "/api/todos/:id" so "completed" isn't matched as an id.
 app.delete("/api/todos/completed", (req, res) => {
   res.json({ removed: clearCompleted() });
+});
+
+app.delete("/api/todos/active", (req, res) => {
+  res.json({ removed: clearActive() });
 });
 
 app.delete("/api/todos/:id", (req, res) => {

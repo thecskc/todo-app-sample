@@ -2,13 +2,29 @@ const list = document.getElementById("list");
 const form = document.getElementById("new-todo");
 const titleInput = document.getElementById("title");
 const clearCompletedBtn = document.getElementById("clear-completed");
+const clearActiveBtn = document.getElementById("clear-active");
+const markAllBtn = document.getElementById("mark-all");
 const filters = document.getElementById("filters");
+const stats = document.getElementById("stats");
 
 let currentStatus = "all";
 
 async function fetchTodos() {
   const res = await fetch(`/api/todos?status=${currentStatus}`);
   return res.json();
+}
+
+async function fetchStats() {
+  const res = await fetch("/api/todos/stats");
+  return res.json();
+}
+
+function renderStats(summary) {
+  stats.innerHTML = `
+    <span>${summary.total} total</span>
+    <span>${summary.byStatus.active} active</span>
+    <span>${summary.byStatus.completed} completed</span>
+  `;
 }
 
 function render(todos) {
@@ -33,10 +49,14 @@ function render(todos) {
     list.appendChild(li);
   }
   clearCompletedBtn.hidden = !todos.some((t) => t.done);
+  clearActiveBtn.hidden = !todos.some((t) => !t.done);
+  markAllBtn.hidden = !todos.some((t) => !t.done);
 }
 
 async function refresh() {
-  render(await fetchTodos());
+  const [todos, summary] = await Promise.all([fetchTodos(), fetchStats()]);
+  render(todos);
+  renderStats(summary);
 }
 
 async function toggle(todo) {
@@ -65,6 +85,16 @@ filters.addEventListener("click", (e) => {
 
 clearCompletedBtn.addEventListener("click", async () => {
   await fetch("/api/todos/completed", { method: "DELETE" });
+  refresh();
+});
+
+clearActiveBtn.addEventListener("click", async () => {
+  await fetch("/api/todos/active", { method: "DELETE" });
+  refresh();
+});
+
+markAllBtn.addEventListener("click", async () => {
+  await fetch("/api/todos/completed", { method: "PATCH" });
   refresh();
 });
 
