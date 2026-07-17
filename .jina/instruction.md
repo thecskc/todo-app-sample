@@ -18,6 +18,12 @@ Eligible issues normally involve data loss or corruption, a security or
 tenant-isolation failure, a broad production outage, or an unrecoverable
 backwards-compatibility break.
 
+Report only issues directly introduced by the pull request. A finding must be
+absent on the base branch and caused by the changed code or its direct
+interaction with an existing dependency. Never investigate or report a
+pre-existing issue, an unrelated repository concern, or a potential issue
+outside the pull request's changed behavior.
+
 Be extremely concise: each issue description must be one or two lines maximum.
 State the concrete impact and the evidence; omit background, advice, and
 speculation.
