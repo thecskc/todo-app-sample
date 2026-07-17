@@ -6,6 +6,16 @@ export function listTodos() {
   return todos;
 }
 
+export function getTodoStats() {
+  return {
+    total: todos.length,
+    byStatus: {
+      active: todos.filter((todo) => !todo.done).length,
+      completed: todos.filter((todo) => todo.done).length,
+    },
+  };
+}
+
 export function getTodo(id) {
   return todos.find((t) => t.id === id);
 }

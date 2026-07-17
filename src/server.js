@@ -1,7 +1,7 @@
 import express from "express";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { listTodos, getTodo, createTodo, updateTodo, deleteTodo, clearCompleted } from "./store.js";
+import { listTodos, getTodo, getTodoStats, createTodo, updateTodo, deleteTodo, clearCompleted } from "./store.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -28,6 +28,10 @@ app.get("/api/todos/:id", (req, res) => {
   const todo = getTodo(Number(req.params.id));
   if (!todo) return res.status(404).json({ error: "not found" });
   res.json(todo);
+});
+
+app.get("/api/todos/stats", (req, res) => {
+  res.json(getTodoStats());
 });
 
 app.post("/api/todos", (req, res) => {

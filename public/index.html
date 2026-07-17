@@ -16,6 +16,7 @@
       li span { flex: 1; }
       .filters { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
       .filters button.active { font-weight: bold; border-color: #333; }
+      .stats { display: flex; gap: 1rem; margin-bottom: 1rem; color: #555; font-size: 0.9rem; }
     </style>
   </head>
   <body>
@@ -29,6 +30,7 @@
       <button type="button" data-status="active">Active</button>
       <button type="button" data-status="completed">Completed</button>
     </div>
+    <div class="stats" id="stats"></div>
     <ul id="list"></ul>
     <button id="clear-completed" type="button" hidden>Clear completed</button>
     <script src="app.js"></script>
