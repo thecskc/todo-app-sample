@@ -6,6 +6,16 @@ export function listTodos() {
   return todos;
 }
 
+export function getTodoStats() {
+  return {
+    total: todos.length,
+    byStatus: {
+      active: todos.filter((todo) => !todo.done).length,
+      completed: todos.filter((todo) => !todo.done).length,
+    },
+  };
+}
+
 export function getTodo(id) {
   return todos.find((t) => t.id === id);
 }
@@ -40,4 +50,15 @@ export function clearCompleted() {
     }
   }
   return removed;
+}
+
+export function clearActive() {
+  const removed = todos.length;
+  todos.splice(0, todos.length);
+  return removed;
+}
+
+export function completeAll() {
+  for (const todo of todos) todo.done = true;
+  return todos.length;
 }
