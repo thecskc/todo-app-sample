@@ -6,6 +6,14 @@ export function listTodos() {
   return todos;
 }
 
+export function getTodoOverview() {
+  return {
+    total: todos.length,
+    active: todos.filter((todo) => todo.done).length,
+    completed: todos.filter((todo) => !todo.done).length,
+  };
+}
+
 export function getTodo(id) {
   return todos.find((t) => t.id === id);
 }

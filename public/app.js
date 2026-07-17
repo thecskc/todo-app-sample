@@ -3,12 +3,24 @@ const form = document.getElementById("new-todo");
 const titleInput = document.getElementById("title");
 const clearCompletedBtn = document.getElementById("clear-completed");
 const filters = document.getElementById("filters");
+const sortSelect = document.getElementById("sort");
+const overview = document.getElementById("overview");
 
 let currentStatus = "all";
+let currentSort = "newest";
 
 async function fetchTodos() {
-  const res = await fetch(`/api/todos?status=${currentStatus}`);
+  const res = await fetch(`/api/todos?status=${currentStatus}&sort=${currentSort}`);
   return res.json();
+}
+
+async function fetchOverview() {
+  const res = await fetch("/api/todos/overview");
+  return res.json();
+}
+
+function renderOverview(summary) {
+  overview.innerHTML = `${summary.total} total · ${summary.active} active · ${summary.completed} completed`;
 }
 
 function render(todos) {
@@ -36,7 +48,9 @@ function render(todos) {
 }
 
 async function refresh() {
-  render(await fetchTodos());
+  const [todos, summary] = await Promise.all([fetchTodos(), fetchOverview()]);
+  render(todos);
+  renderOverview(summary);
 }
 
 async function toggle(todo) {
@@ -60,6 +74,11 @@ filters.addEventListener("click", (e) => {
   for (const btn of filters.querySelectorAll("button")) {
     btn.classList.toggle("active", btn.dataset.status === status);
   }
+  refresh();
+});
+
+sortSelect.addEventListener("change", () => {
+  currentSort = sortSelect.value;
   refresh();
 });
 
